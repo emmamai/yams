@@ -8,8 +8,7 @@ systemInfo_t macse = {
 	"macse",
 	"MacSE.ROM",
 	262144,
-	{ 524288, 1048576, 2097152, 2621440, 4194304 },
-	MMU_BBU
+	{ 524288, 1048576, 2097152, 2621440, 4194304 }
 };
 
 systemInfo_t *currentSystem;
