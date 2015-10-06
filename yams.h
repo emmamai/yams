@@ -18,3 +18,7 @@ typedef struct {
 extern systemInfo_t *currentSystem;
 
 void Quit();
+
+int VID_Init();
+void VID_Cleanup();
+void VID_SetPixel( int x, int y, char color );

@@ -15,7 +15,7 @@ unsigned int MEM_GetByte( unsigned int addr ) {
 			return 0;
 		}
 		if ( addr < 0xF00000 ) {
-			printf( "WARNING: VIA access unsupported\n" );
+			//printf( "WARNING: VIA access unsupported\n" );
 		}
 		if ( addr < 0xF80000 ) { //no device
 			return 0;
@@ -92,7 +92,7 @@ unsigned int MEM_GetByte( unsigned int addr ) {
 
 unsigned int m68k_read_memory_8( unsigned int addr ) {
 	unsigned int retVal = MEM_GetByte( addr );
-	printf("read8 a:%x v:0x%x\n", addr, retVal );
+	//printf("read8 a:%x v:0x%x\n", addr, retVal );
 	if ( changeMapAfterAccess == 1 ) {
 		memMode = memMode ^ 1;
 		changeMapAfterAccess = 0;
@@ -104,7 +104,7 @@ unsigned int m68k_read_memory_16( unsigned int addr ) {
 	unsigned int retVal = 	( MEM_GetByte( addr ) << 8 ) + 
 							( MEM_GetByte( addr + 1) );
 							
-	printf( "read16 a:%x v:%x\n", addr, retVal );
+	//printf( "read16 a:%x v:%x\n", addr, retVal );
 	if ( changeMapAfterAccess == 1 ) {
 		memMode = memMode ^ 1;
 		changeMapAfterAccess = 0;
@@ -118,7 +118,7 @@ unsigned int m68k_read_memory_32( unsigned int addr ) {
 							( MEM_GetByte( addr + 2) << 8 ) +
 							( MEM_GetByte( addr + 3) );
 
-	printf( "read32 a:%x v:%x\n", addr, retVal );
+	//printf( "read32 a:%x v:%x\n", addr, retVal );
 	if ( changeMapAfterAccess == 1 ) {
 		memMode = memMode ^ 1;
 		changeMapAfterAccess = 0;
