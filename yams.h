@@ -2,6 +2,9 @@
 #define YAMS_VER "0.1"
 #define YAMS_BUILD "1"
 
+//#define DPRINT_ASM
+//#define DPRINT_MEM_ACCESS
+
 extern unsigned int ramSize;
 extern unsigned char *ram;
 extern unsigned char *rom;

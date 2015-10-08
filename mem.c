@@ -62,15 +62,15 @@ unsigned int MEM_GetByte( unsigned int addr ) {
 					return 0;
 				}
 				if ( addr < 0x500000 ) {
-					changeMapAfterAccess = 1;
+					//changeMapAfterAccess = 1;
 					return rom[( addr - 0x400000 ) % currentSystem->romSize];
 				}
 				if ( addr < 0x580000 ) {
-					changeMapAfterAccess = 1;
+					//changeMapAfterAccess = 1;
 					return 0;
 				}
 				if ( addr < 0x600000 ) {
-					changeMapAfterAccess = 1;
+					//changeMapAfterAccess = 1;
 					if ( addr % 2 == 0 ) {
 						printf( "WARNING: SCSI read - unsupported\n" );
 						return 0;
@@ -90,9 +90,26 @@ unsigned int MEM_GetByte( unsigned int addr ) {
 	}
 }
 
+void MEM_SetByte( unsigned int addr, unsigned char val ) {
+	if ( memMode == 1 ) { //normal map
+		if ( addr < 0x400000 ) {
+			ram[addr % ramSize] = val;
+		}
+	} else { //boot map
+		if ( addr < 0x600000 ) {
+			return;
+		}
+		if ( addr < 0x800000 ) {
+			ram[( addr - 0x600000 ) % ramSize] = val;
+		}
+	}
+}
+
 unsigned int m68k_read_memory_8( unsigned int addr ) {
 	unsigned int retVal = MEM_GetByte( addr );
-	//printf("read8 a:%x v:0x%x\n", addr, retVal );
+	#ifdef DPRINT_MEM_ACCESS
+	printf("read8 a:%x v:0x%x\n", addr, retVal );
+	#endif
 	if ( changeMapAfterAccess == 1 ) {
 		memMode = memMode ^ 1;
 		changeMapAfterAccess = 0;
@@ -104,7 +121,9 @@ unsigned int m68k_read_memory_16( unsigned int addr ) {
 	unsigned int retVal = 	( MEM_GetByte( addr ) << 8 ) + 
 							( MEM_GetByte( addr + 1) );
 							
-	//printf( "read16 a:%x v:%x\n", addr, retVal );
+	#ifdef DPRINT_MEM_ACCESS
+	printf( "read16 a:%x v:%x\n", addr, retVal );
+	#endif
 	if ( changeMapAfterAccess == 1 ) {
 		memMode = memMode ^ 1;
 		changeMapAfterAccess = 0;
@@ -118,7 +137,9 @@ unsigned int m68k_read_memory_32( unsigned int addr ) {
 							( MEM_GetByte( addr + 2) << 8 ) +
 							( MEM_GetByte( addr + 3) );
 
-	//printf( "read32 a:%x v:%x\n", addr, retVal );
+	#ifdef DPRINT_MEM_ACCESS
+	printf( "read32 a:%x v:%x\n", addr, retVal );
+	#endif
 	if ( changeMapAfterAccess == 1 ) {
 		memMode = memMode ^ 1;
 		changeMapAfterAccess = 0;
@@ -127,13 +148,26 @@ unsigned int m68k_read_memory_32( unsigned int addr ) {
 }
 
 void m68k_write_memory_8( unsigned int addr, unsigned int val ) {
+	#ifdef DPRINT_MEM_ACCESS
 	printf( "write8 a:%x v:%x\n", addr, val );
+	#endif
+	MEM_SetByte( addr, val );
 }
 
 void m68k_write_memory_16( unsigned int addr, unsigned int val ) {
+	#ifdef DPRINT_MEM_ACCESS
 	printf( "write16 a:%x v:%x\n", addr, val );
+	#endif
+	MEM_SetByte( addr, val );
+	MEM_SetByte( addr, val >> 8 );
 }
 
 void m68k_write_memory_32( unsigned int addr, unsigned int val ) {
+	#ifdef DPRINT_MEM_ACCESS
 	printf( "write32 a:%x v:%x\n", addr, val );
+	#endif
+	MEM_SetByte( addr, val );
+	MEM_SetByte( addr, val >> 8 );
+	MEM_SetByte( addr, val >> 16 );
+	MEM_SetByte( addr, val >> 24 );
 }

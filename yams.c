@@ -8,7 +8,7 @@ systemInfo_t mac128 = {
 	"mac128",
 	"Mac128.ROM",
 	65536,
-	{ 131072 }
+	{ 524288 ,131072 }
 };
 
 systemInfo_t macse = {
@@ -63,26 +63,35 @@ int main( int argc, char *argv[] ) {
 	m68k_pulse_reset();
 
 	int i;
-	char *daBuf = malloc( 256 );
+	int x, y;
 	int n = 0;
 	int run = 0;
 
+	#ifdef DPRINT_ASM
+	char *daBuf = malloc( 256 );
+	#endif
+
 	while( run == 0) {
 		for ( i = 0; i < 133333; i++ ) {
+			#ifdef DPRINT_ASM
+
 			m68k_disassemble( daBuf, m68k_get_reg( NULL, M68K_REG_PC ), M68K_CPU_TYPE_68000 );
-			//printf( "%s\n", daBuf );
+			printf( "%s\n", daBuf );
+			#endif
 			m68k_execute( 1 );
 		}
-		for ( i = 0; i < ( 512 * 384 ); i++ ) {
-			VID_SetPixel( i % 512, i / 512, ram[ 0x01A700 + i ] );
+		for ( x = 0; x < 512; x++ ) {
+			for ( y = 0; y < 384; y++ ) {
+				VID_SetPixel( x, y, ( ram[(y*48)+(x/8) + 0x01A700] ) & ( 0x80 >> ( x % 8 ) ) );
+			}
 		}
-		if ( n++ > 300 ) {
+		if ( n++ > 3000 ) {
 			run = 1;
 		}
 	}
-
+	#ifdef DPRINT_ASM
 	free( daBuf );
-
+	#endif
 	
 
 	Quit();
