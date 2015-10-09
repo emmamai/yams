@@ -78,7 +78,9 @@ unsigned int MEM_GetByte( unsigned int addr ) {
 						return 0;
 					}
 				}
-				return ram[(addr - 0x600000)];
+				if ( addr < 0x680000 ) {
+					return ram[(addr - 0x600000) % ramSize];
+				}
 			}
 		}
 		//beyond this point, accesses are the same regardless of memory mode

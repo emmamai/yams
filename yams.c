@@ -87,14 +87,15 @@ int main( int argc, char *argv[] ) {
 		#endif
 		for ( y = 0; y < 342; y++ ) {
 			for ( x = 0; x < 64; x++ ) {
-				VID_SetPixel( ( x * 8 ) + 0 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 0 ) );
-				VID_SetPixel( ( x * 8 ) + 1 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 1 ) );
-				VID_SetPixel( ( x * 8 ) + 2 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 2 ) );
-				VID_SetPixel( ( x * 8 ) + 3 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 3 ) );
-				VID_SetPixel( ( x * 8 ) + 4 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 4 ) );
-				VID_SetPixel( ( x * 8 ) + 5 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 5 ) );
-				VID_SetPixel( ( x * 8 ) + 6 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 6 ) );
-				VID_SetPixel( ( x * 8 ) + 7 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 7 ) );
+				char b = ram[(y*64)+(x) + VID_BASE];
+				VID_SetPixel( ( x * 8 ) + 0 , y, b & ( 0x80 >> 0 ) );
+				VID_SetPixel( ( x * 8 ) + 1 , y, b & ( 0x80 >> 1 ) );
+				VID_SetPixel( ( x * 8 ) + 2 , y, b & ( 0x80 >> 2 ) );
+				VID_SetPixel( ( x * 8 ) + 3 , y, b & ( 0x80 >> 3 ) );
+				VID_SetPixel( ( x * 8 ) + 4 , y, b & ( 0x80 >> 4 ) );
+				VID_SetPixel( ( x * 8 ) + 5 , y, b & ( 0x80 >> 5 ) );
+				VID_SetPixel( ( x * 8 ) + 6 , y, b & ( 0x80 >> 6 ) );
+				VID_SetPixel( ( x * 8 ) + 7 , y, b & ( 0x80 >> 7 ) );
 			}
 		}
 		VID_Flush();
@@ -102,7 +103,7 @@ int main( int argc, char *argv[] ) {
 			printf( "%d\n", n );
 		}
 		
-		if ( n++ > 300 ) {
+		if ( n++ > 6000 ) {
 			run = 1;
 		}
 	}
