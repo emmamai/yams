@@ -8,6 +8,10 @@ unsigned int window;
 unsigned int blackContext;
 unsigned int whiteContext;
 
+void VID_Flush() {
+	xcb_flush( c );
+}
+
 void VID_SetPixel( int x, int y, char color ) {
 	xcb_point_t p[] = { {x, y} };
 	int context;
@@ -41,7 +45,7 @@ int VID_Init() {
 
 	window = xcb_generate_id( c );
 	xcb_create_window (		c, XCB_COPY_FROM_PARENT, window, screen->root, 
-							0, 0, 512, 384, 
+							0, 0, 512, 342, 
 							0, XCB_WINDOW_CLASS_INPUT_OUTPUT, screen->root_visual, 
 							XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK, v);
 

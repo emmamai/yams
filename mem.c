@@ -21,7 +21,6 @@ unsigned int MEM_GetByte( unsigned int addr ) {
 			return 0;
 		}
 		if ( addr < 0xFA0000 ) {
-			printf( "WARNING: Access to reserved area at 0x%x\n", addr );
 			return 0;
 		}
 		if ( addr < 0xFFFFF0 ) { //no device
@@ -82,9 +81,8 @@ unsigned int MEM_GetByte( unsigned int addr ) {
 				return ram[(addr - 0x600000)];
 			}
 		}
-
 		//beyond this point, accesses are the same regardless of memory mode
-		printf( "WARNING: Upper memory hardware access unsupported\n" );
+		//printf( "WARNING: Upper memory hardware access unsupported\n" );
 		return 0;
 
 	}
@@ -159,7 +157,7 @@ void m68k_write_memory_16( unsigned int addr, unsigned int val ) {
 	printf( "write16 a:%x v:%x\n", addr, val );
 	#endif
 	MEM_SetByte( addr, val );
-	MEM_SetByte( addr, val >> 8 );
+	MEM_SetByte( addr + 1, val >> 8 );
 }
 
 void m68k_write_memory_32( unsigned int addr, unsigned int val ) {
@@ -167,7 +165,7 @@ void m68k_write_memory_32( unsigned int addr, unsigned int val ) {
 	printf( "write32 a:%x v:%x\n", addr, val );
 	#endif
 	MEM_SetByte( addr, val );
-	MEM_SetByte( addr, val >> 8 );
-	MEM_SetByte( addr, val >> 16 );
-	MEM_SetByte( addr, val >> 24 );
+	MEM_SetByte( addr + 1, val >> 8 );
+	MEM_SetByte( addr + 2, val >> 16 );
+	MEM_SetByte( addr + 3, val >> 24 );
 }

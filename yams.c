@@ -1,14 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "yams.h"
 #include "m68k.h"
+
 
 systemInfo_t mac128 = {
 	"mac128",
 	"Mac128.ROM",
 	65536,
-	{ 524288 ,131072 }
+	{ 131072, 524288 }
 };
 
 systemInfo_t macse = {
@@ -31,6 +33,8 @@ int main( int argc, char *argv[] ) {
 
 	ramSize = currentSystem->validRamSizes[0];
 	ram = malloc( ramSize );
+	int tmp = ramSize;
+	memset( ram, 1, ramSize );
 
 	printf( "Emulating system \"%s\" with %dkb RAM\n", currentSystem->name, ramSize/1024 );
 
@@ -71,21 +75,34 @@ int main( int argc, char *argv[] ) {
 	char *daBuf = malloc( 256 );
 	#endif
 
-	while( run == 0) {
-		for ( i = 0; i < 133333; i++ ) {
-			#ifdef DPRINT_ASM
+	#define VID_BASE 0x1A700
 
-			m68k_disassemble( daBuf, m68k_get_reg( NULL, M68K_REG_PC ), M68K_CPU_TYPE_68000 );
-			printf( "%s\n", daBuf );
-			#endif
-			m68k_execute( 1 );
-		}
-		for ( x = 0; x < 512; x++ ) {
-			for ( y = 0; y < 384; y++ ) {
-				VID_SetPixel( x, y, ( ram[(y*48)+(x/8) + 0x01A700] ) & ( 0x80 >> ( x % 8 ) ) );
+	while( run == 0) {
+		#ifdef DPRINT_ASM
+		m68k_disassemble( daBuf, m68k_get_reg( NULL, M68K_REG_PC ), M68K_CPU_TYPE_68000 );
+		printf( "%s\n", daBuf );
+		m68k_execute( 1 );
+		#else
+		m68k_execute( 133333 );
+		#endif
+		for ( y = 0; y < 342; y++ ) {
+			for ( x = 0; x < 64; x++ ) {
+				VID_SetPixel( ( x * 8 ) + 0 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 0 ) );
+				VID_SetPixel( ( x * 8 ) + 1 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 1 ) );
+				VID_SetPixel( ( x * 8 ) + 2 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 2 ) );
+				VID_SetPixel( ( x * 8 ) + 3 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 3 ) );
+				VID_SetPixel( ( x * 8 ) + 4 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 4 ) );
+				VID_SetPixel( ( x * 8 ) + 5 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 5 ) );
+				VID_SetPixel( ( x * 8 ) + 6 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 6 ) );
+				VID_SetPixel( ( x * 8 ) + 7 , y, ( ram[(y*64)+(x) + VID_BASE] ) & ( 0x80 >> 7 ) );
 			}
 		}
-		if ( n++ > 3000 ) {
+		VID_Flush();
+		if ( n % 60 == 0 ) {
+			printf( "%d\n", n );
+		}
+		
+		if ( n++ > 300 ) {
 			run = 1;
 		}
 	}
