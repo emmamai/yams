@@ -10,9 +10,11 @@ unsigned char memMode = 0;
 int changeMapAfterAccess = 0;
 
 unsigned int MEM_GetByte( unsigned int addr ) {
-	if( addr >= 0xE00000 ) {
-		//VPA
-		if ( addr < 0xE80000 ) { //no device
+	if( addr >= 0xD00000 ) {
+		if ( addr < 0xE00000 ) {
+			printf( "WARNING: IWM read unsupported, 0x%x\n", addr );
+			return 0x1f;
+		} else if ( addr < 0xE80000 ) { //no device
 			return 0;
 		}
 		if ( addr < 0xF00000 ) {

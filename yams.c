@@ -31,7 +31,12 @@ int main( int argc, char *argv[] ) {
 	printf( "yams %sb%s\n", YAMS_VER, YAMS_BUILD );
 
 	//todo: read command line params
-	currentSystem = &mac128;
+	if ( argc > 1 && !strncmp( argv[1], "macse", 6 ) ) {
+		currentSystem = &macse;
+	} else {
+		currentSystem = &mac128;
+	}
+	
 
 	ramSize = currentSystem->validRamSizes[0];
 	ram = malloc( ramSize );
@@ -78,12 +83,12 @@ int main( int argc, char *argv[] ) {
 	char *daBuf = malloc( 256 );
 	#endif
 
-	#define VID_BASE 0x1A700
+	#define VID_BASE (ramSize-0x5900)
 
 	while( run == 0) {
 		#ifdef DPRINT_ASM
 		m68k_disassemble( daBuf, m68k_get_reg( NULL, M68K_REG_PC ), M68K_CPU_TYPE_68000 );
-		printf( "%s\n", daBuf );
+		printf( "%6x : %s\n", m68k_get_reg( NULL, M68K_REG_PC ), daBuf );
 		m68k_execute( 1 );
 		#else
 		m68k_execute( 133333 );

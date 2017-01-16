@@ -16,9 +16,9 @@ void VID_SetPixel( int x, int y, char color ) {
 	xcb_point_t p[] = { {x, y} };
 	int context;
 	if ( color == 0 ) {
-		context = blackContext;
-	} else {
 		context = whiteContext;
+	} else {
+		context = blackContext;
 	}
 
 	xcb_poly_point( c, XCB_COORD_MODE_ORIGIN, window, context, 1, p );
