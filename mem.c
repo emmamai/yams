@@ -1,4 +1,5 @@
-#include "stdio.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "yams.h"
 
 
@@ -16,6 +17,7 @@ unsigned int MEM_GetByte( unsigned int addr ) {
 		}
 		if ( addr < 0xF00000 ) {
 			//printf( "WARNING: VIA access unsupported\n" );
+			return rand();
 		}
 		if ( addr < 0xF80000 ) { //no device
 			return 0;
@@ -40,7 +42,7 @@ unsigned int MEM_GetByte( unsigned int addr ) {
 				}
 				if ( addr < 0x520000 ) {
 					printf( "WARNING: Access to reserved memory area at 0x%x", addr );
-					return 0;
+					return rand();
 				}
 				if ( addr < 0x600000 ) {
 					if ( addr % 2 == 0 ) {

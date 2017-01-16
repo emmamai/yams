@@ -22,6 +22,8 @@ systemInfo_t macse = {
 
 systemInfo_t *currentSystem;
 
+char vrambuf[342*64];
+
 int main( int argc, char *argv[] ) {
 	FILE *romFile;
 	int fileSize = 0;
@@ -34,7 +36,8 @@ int main( int argc, char *argv[] ) {
 	ramSize = currentSystem->validRamSizes[0];
 	ram = malloc( ramSize );
 	int tmp = ramSize;
-	memset( ram, 1, ramSize );
+	memset( ram, 0, ramSize );
+	memset( vrambuf, 0, 342*64 );
 
 	printf( "Emulating system \"%s\" with %dkb RAM\n", currentSystem->name, ramSize/1024 );
 
@@ -87,23 +90,27 @@ int main( int argc, char *argv[] ) {
 		#endif
 		for ( y = 0; y < 342; y++ ) {
 			for ( x = 0; x < 64; x++ ) {
-				char b = ram[(y*64)+(x) + VID_BASE];
-				VID_SetPixel( ( x * 8 ) + 0 , y, b & ( 0x80 >> 0 ) );
-				VID_SetPixel( ( x * 8 ) + 1 , y, b & ( 0x80 >> 1 ) );
-				VID_SetPixel( ( x * 8 ) + 2 , y, b & ( 0x80 >> 2 ) );
-				VID_SetPixel( ( x * 8 ) + 3 , y, b & ( 0x80 >> 3 ) );
-				VID_SetPixel( ( x * 8 ) + 4 , y, b & ( 0x80 >> 4 ) );
-				VID_SetPixel( ( x * 8 ) + 5 , y, b & ( 0x80 >> 5 ) );
-				VID_SetPixel( ( x * 8 ) + 6 , y, b & ( 0x80 >> 6 ) );
-				VID_SetPixel( ( x * 8 ) + 7 , y, b & ( 0x80 >> 7 ) );
+				unsigned int offset = (y*64)+(x);
+				char b = ram[VID_BASE + offset];
+				if ( vrambuf[offset] != b ) {
+					VID_SetPixel( ( x * 8 ) + 0 , y, b & ( 0x80 >> 0 ) );
+					VID_SetPixel( ( x * 8 ) + 1 , y, b & ( 0x80 >> 1 ) );
+					VID_SetPixel( ( x * 8 ) + 2 , y, b & ( 0x80 >> 2 ) );
+					VID_SetPixel( ( x * 8 ) + 3 , y, b & ( 0x80 >> 3 ) );
+					VID_SetPixel( ( x * 8 ) + 4 , y, b & ( 0x80 >> 4 ) );
+					VID_SetPixel( ( x * 8 ) + 5 , y, b & ( 0x80 >> 5 ) );
+					VID_SetPixel( ( x * 8 ) + 6 , y, b & ( 0x80 >> 6 ) );
+					VID_SetPixel( ( x * 8 ) + 7 , y, b & ( 0x80 >> 7 ) );
+					vrambuf[offset] = b;
+				}
 			}
 		}
 		VID_Flush();
 		if ( n % 60 == 0 ) {
-			printf( "%d\n", n );
+			printf( "======================== %d ========================\n", n );
 		}
 		
-		if ( n++ > 6000 ) {
+		if ( n++ > 6000000 ) {
 			run = 1;
 		}
 	}
