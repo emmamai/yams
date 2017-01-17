@@ -5,7 +5,7 @@ DEFINES=
 
 all: yams
 
-yams: $(OBJS)
+yams: $(OBJS) yams.h
 	gcc -L./ -o yams $(OBJS) $(CFLAGS) $(LIBS)
 
 clean:

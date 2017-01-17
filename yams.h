@@ -3,7 +3,7 @@
 #define YAMS_BUILD "2"
 
 #define DPRINT_ASM
-//#define DPRINT_MEM_ACCESS
+#define DPRINT_MEM_ACCESS
 //#define NO_MEM_WARNINGS
 
 extern unsigned int ramSize;

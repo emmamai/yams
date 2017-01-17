@@ -9,7 +9,68 @@ unsigned char *rom;
 unsigned char memMode = 0;
 int changeMapAfterAccess = 0;
 
-unsigned int MEM_GetByte( unsigned int addr ) {
+unsigned char MEM_GetByteBranchless( const unsigned int addr ) {
+
+}
+
+unsigned char MEM_GetByte( const unsigned int addr ) {
+	switch ( addr & 0xf00000 ) {
+		case 0x000000:
+		case 0x100000:
+		case 0x200000:
+		case 0x300000:
+			if ( memMode == 0 )
+				return rom[addr % currentSystem->romSize];
+			else
+				return ram[addr % ramSize];
+		case 0x400000:
+			if ( memMode == 0 )
+				changeMapAfterAccess = 1;
+			return rom[( addr - 0x400000 ) % currentSystem->romSize];
+		case 0x600000:
+		case 0x700000:
+			if ( memMode == 0 )
+				return ram[( addr - 0x600000) % currentSystem->romSize];
+			return 0;
+		case 0x900000:
+		case 0xB00000:
+			fprintf( stderr, "MEM: Access to SCC unimplemented (0x%06X)\n", addr );
+			return 0;
+		case 0xD00000:
+			fprintf( stderr, "MEM: Access to IWM unimplemented (0x%06X)\n", addr );
+			return 0x1f; //dummy value prevents hang
+		case 0xE00000:
+			if ( addr & 0x080000 ) { //VIA
+				fprintf( stderr, "MEM: Access to VIA unimplemented (0x%06X)\n", addr );
+				return rand();
+			} else {
+				fprintf( stderr, "MEM: Access to reserved region at 0x%06X\n", addr );
+				return 0;
+			}
+		case 0xF00000:
+			if ( addr & 0x080000 ) {
+				fprintf( stderr, "MEM: Access to test sofware at 0x%06X\n", addr );
+				return 0;
+			} else {
+				fprintf( stderr, "MEM: Access to phase read unimplemented (0x%06X)\n", addr ); 
+				return 0;
+			}
+			
+		//bad accesses
+
+		case 0x500000:
+		case 0xA00000:
+		case 0xC00000:
+			fprintf( stderr, "MEM: Access to reserved region at 0x%06X\n", addr );
+			return 0;
+		default:
+		case 0x800000:
+			fprintf( stderr, "MEM: Access to unassigned region at 0x%06X\n", addr );
+			return 0;
+	}
+}
+
+unsigned char MEM_GetByteOld( const unsigned int addr ) {
 	if( addr >= 0xD00000 ) {
 		if ( addr < 0xE00000 ) {
 			printf( "WARNING: IWM read unsupported, 0x%x\n", addr );
@@ -65,15 +126,15 @@ unsigned int MEM_GetByte( unsigned int addr ) {
 					return 0;
 				}
 				if ( addr < 0x500000 ) {
-					//changeMapAfterAccess = 1;
+					changeMapAfterAccess = 1;
 					return rom[( addr - 0x400000 ) % currentSystem->romSize];
 				}
 				if ( addr < 0x580000 ) {
-					//changeMapAfterAccess = 1;
+					changeMapAfterAccess = 1;
 					return 0;
 				}
 				if ( addr < 0x600000 ) {
-					//changeMapAfterAccess = 1;
+					changeMapAfterAccess = 1;
 					if ( addr % 2 == 0 ) {
 						printf( "WARNING: SCSI read - unsupported\n" );
 						return 0;
@@ -114,10 +175,7 @@ unsigned int m68k_read_memory_8( unsigned int addr ) {
 	#ifdef DPRINT_MEM_ACCESS
 	printf("read8 a:%x v:0x%x\n", addr, retVal );
 	#endif
-	if ( changeMapAfterAccess == 1 ) {
-		memMode = memMode ^ 1;
-		changeMapAfterAccess = 0;
-	}
+	memMode = memMode | changeMapAfterAccess;
 	return retVal;
 }
 
@@ -128,10 +186,7 @@ unsigned int m68k_read_memory_16( unsigned int addr ) {
 	#ifdef DPRINT_MEM_ACCESS
 	printf( "read16 a:%x v:%x\n", addr, retVal );
 	#endif
-	if ( changeMapAfterAccess == 1 ) {
-		memMode = memMode ^ 1;
-		changeMapAfterAccess = 0;
-	}
+	memMode = memMode | changeMapAfterAccess;
 	return retVal;
 }
 
@@ -144,10 +199,7 @@ unsigned int m68k_read_memory_32( unsigned int addr ) {
 	#ifdef DPRINT_MEM_ACCESS
 	printf( "read32 a:%x v:%x\n", addr, retVal );
 	#endif
-	if ( changeMapAfterAccess == 1 ) {
-		memMode = memMode ^ 1;
-		changeMapAfterAccess = 0;
-	}
+	memMode = memMode | changeMapAfterAccess;
 	return retVal;
 }
 
