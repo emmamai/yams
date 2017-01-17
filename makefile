@@ -1,11 +1,12 @@
 CFLAGS= -Wall -g -O2
-SOURCES= yams.c mem.c m68kcpu.c m68kdasm.c m68kops.c m68kopac.c m68kopdm.c m68kopnz.c vid.c
+OBJS= yams.o mem.o vid.o m68kcpu.o m68kdasm.o m68kops.o m68kopac.o m68kopdm.o m68kopnz.o
+LIBS= -lxcb
 DEFINES=
 
 all: yams
 
-yams: $(SOURCES)
-	gcc -L./ -o yams $(SOURCES) $(CFLAGS) -lxcb
+yams: $(OBJS)
+	gcc -L./ -o yams $(OBJS) $(CFLAGS) $(LIBS)
 
 clean:
 	rm *.o yams
