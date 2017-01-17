@@ -5,12 +5,27 @@
 #include "yams.h"
 #include "m68k.h"
 
+#define NUM_SUPPORTED_SYSTEMS 3
 
 systemInfo_t mac128 = {
 	"mac128",
-	"Mac128.ROM",
+	"mac128.rom",
 	65536,
 	{ 131072, 524288 }
+};
+
+systemInfo_t mac128ke = {
+	"mac128ke",
+	"mac128ke.rom",
+	131072,
+	{ 131072, 524288 }
+};
+
+systemInfo_t macplus = {
+	"macplus",
+	"macplus.rom",
+	131072,
+	{ 524288, 1048576, 2097152, 2621440, 4194304 }
 };
 
 systemInfo_t macse = {
@@ -20,23 +35,39 @@ systemInfo_t macse = {
 	{ 524288, 1048576, 2097152, 2621440, 4194304 }
 };
 
+systemInfo_t* sysInfo[NUM_SUPPORTED_SYSTEMS] = {
+	&mac128,
+	&mac128ke,
+	&macplus,
+	&macse
+};
+
 systemInfo_t *currentSystem;
 
 char vrambuf[342*64];
 
 int main( int argc, char *argv[] ) {
 	FILE *romFile;
-	int fileSize = 0;
+	char buf[64];
+	int fileSize = 0, i, j;
 
 	printf( "yams %sb%s\n", YAMS_VER, YAMS_BUILD );
 
-	//todo: read command line params
-	if ( argc > 1 && !strncmp( argv[1], "macse", 6 ) ) {
-		currentSystem = &macse;
-	} else {
-		currentSystem = &mac128;
+	currentSystem = &mac128;
+
+	for( i = 1; i < argc; i++ ) {
+		printf( "checking for -m - %s\n", argv[i] );
+		if ( strncmp( argv[i], "-m", 2 ) == 0 ) {
+			strncpy( &buf, argv[++i], 64 );
+			for( j = 0; j < NUM_SUPPORTED_SYSTEMS; j++ ) {
+				if ( strncmp( buf, sysInfo[j]->name, 64 ) == 0 ) {
+					currentSystem = sysInfo[j];
+				}
+			}
+		}
 	}
 	
+	sleep( 1 );
 
 	ramSize = currentSystem->validRamSizes[0];
 	ram = malloc( ramSize );
@@ -74,7 +105,6 @@ int main( int argc, char *argv[] ) {
 	m68k_set_cpu_type( M68K_CPU_TYPE_68000 );
 	m68k_pulse_reset();
 
-	int i;
 	int x, y;
 	int n = 0;
 	int run = 0;
