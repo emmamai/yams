@@ -162,8 +162,8 @@ void m68k_write_memory_16( unsigned int addr, unsigned int val ) {
 	#ifdef DPRINT_MEM_ACCESS
 	printf( "write16 a:%x v:%x\n", addr, val );
 	#endif
-	MEM_SetByte( addr, val );
-	MEM_SetByte( addr + 1, val >> 8 );
+	MEM_SetByte( addr + 1, val );
+	MEM_SetByte( addr + 0, val >> 8 );
 }
 
 void m68k_write_memory_32( unsigned int addr, unsigned int val ) {
