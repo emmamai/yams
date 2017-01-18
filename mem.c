@@ -9,10 +9,6 @@ unsigned char *rom;
 unsigned char memMode = 0;
 int changeMapAfterAccess = 0;
 
-unsigned char MEM_GetByteBranchless( const unsigned int addr ) {
-
-}
-
 unsigned char MEM_GetByte( const unsigned int addr ) {
 	switch ( addr & 0xf00000 ) {
 		case 0x000000:
@@ -70,7 +66,7 @@ unsigned char MEM_GetByte( const unsigned int addr ) {
 	}
 }
 
-unsigned char MEM_GetByteOld( const unsigned int addr ) {
+unsigned char MEM_GetByteold( const unsigned int addr ) {
 	if( addr >= 0xD00000 ) {
 		if ( addr < 0xE00000 ) {
 			printf( "WARNING: IWM read unsupported, 0x%x\n", addr );

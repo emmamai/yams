@@ -44,7 +44,7 @@ systemInfo_t* sysInfo[NUM_SUPPORTED_SYSTEMS] = {
 
 systemInfo_t *currentSystem;
 
-char vrambuf[342*64];
+unsigned char vrambuf[342*64];
 
 int main( int argc, char *argv[] ) {
 	FILE *romFile;
@@ -53,7 +53,7 @@ int main( int argc, char *argv[] ) {
 
 	printf( "yams %sb%s\n", YAMS_VER, YAMS_BUILD );
 
-	currentSystem = &mac128;
+	currentSystem = &mac128ke;
 
 	for( i = 1; i < argc; i++ ) {
 		printf( "checking for -m - %s\n", argv[i] );
@@ -136,6 +136,7 @@ int main( int argc, char *argv[] ) {
 				unsigned int offset = (y*64)+(x);
 				unsigned char b = ram[(VID_BASE+offset)];
 				//unsigned char b = MEM_GetByte( VID_BASE + offset );
+				//printf( "offset 0x%06X vbuf %d ram %d\n", offset, vrambuf[offset], b );
 				if ( vrambuf[offset] != b ) {
 					VID_SetPixel( ( x * 8 ) + 0 , y, b & ( 0x80 >> 0 ) );
 					VID_SetPixel( ( x * 8 ) + 1 , y, b & ( 0x80 >> 1 ) );
