@@ -5,7 +5,7 @@
 #include "yams.h"
 #include "m68k.h"
 
-#define NUM_SUPPORTED_SYSTEMS 3
+#define NUM_SUPPORTED_SYSTEMS 4
 
 systemInfo_t mac128 = {
 	"mac128",
@@ -30,7 +30,7 @@ systemInfo_t macplus = {
 
 systemInfo_t macse = {
 	"macse",
-	"MacSE.ROM",
+	"macse.rom",
 	262144,
 	{ 1048576, 2097152, 2621440, 4194304 }
 };
@@ -134,7 +134,7 @@ int main( int argc, char *argv[] ) {
 		for ( y = 0; y < 342; y++ ) {
 			for ( x = 0; x < 64; x++ ) {
 				unsigned int offset = (y*64)+(x);
-				unsigned char b = ram[(VID_BASE+offset)];
+				unsigned char b = ram[(VID_BASE+offset)%ramSize];
 				//unsigned char b = MEM_GetByte( VID_BASE + offset );
 				//printf( "offset 0x%06X vbuf %d ram %d\n", offset, vrambuf[offset], b );
 				if ( vrambuf[offset] != b ) {
